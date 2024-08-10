@@ -1,3 +1,9 @@
+# Ignore everything
+*
 
-/Tests
-.vscode/tasks.json
+# Except:
+!*.c
+!*.pdf
+!*/
+!.gitignore
+!*.md
