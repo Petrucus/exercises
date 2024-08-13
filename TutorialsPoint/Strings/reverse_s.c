@@ -1,102 +1,86 @@
 #include <stdlib.h>
-void ifnot_space(char e, int* word_count, char** list_of_words, int* word_len)
-{
-    if(e != 32)
-    {
-        *word_count++;
-        list_of_words = realloc(sizeof(char*),  mem++);
-        *word_len = 0;
-    }
-}
 
-void if_space(char e, int* word_count, char** list_of_words, int* word_len)
+int len(char* e)
 {
-    if(e == 32)
-    {
-        *word_count++;
-        list_of_words = realloc(sizeof(char*),  mem++);
-        *word_len = 0;
-    }
-}
+    int len;
 
-void while_space(char** e, int* word_len)
-{
-    while(*e == 32)
-    {
-        *word_len++;
-        (*e)++;
-        e++;
-    }
-}
-
-void while_not_space(char** e, int* word_len)
-{
-    while(*e != 32)
-    {
-        *word_len++;
-        (*e)++;
-        e++;
-    }
+    len = 0;
+    while(e[len])
+        len++;
+    return (len);
 }
 
 char* word(int word_len, char* e)
 {
-    char* word;
+    char* word = NULL;
     int index;
 
-    word = calloc(sizeof(char), word_len + 1);
     index = 0;
+    word = calloc(sizeof(char), word_len + 1);
     while(word_len)
-        word[index] = *(e - word_len--);
+        word[index++] = *(e - word_len--);
+    word[index] = '\0';
+    return (word);
 }
 
-char* reverse(char** list_of_words, word_count)
+char* reverse(char** list_of_words, int word_count, char* e)
 {
-    int iter;
-    
-    iter = 0;
-    while(word_count > 0)
+    int index;
+    int words;
+    int word_len;
+
+    words = 0;
+    while(words < word_count)
     {
-        while(list_of_words[word_count][iter])
-        {
-            *(--e) = list_of_words[word_count][iter];
-            iter++;
-        }
-        word_count--;
+        index = 0;
+        word_len = len(list_of_words[words]) - 1;
+        while(list_of_words[words][index])
+            *(--e) = list_of_words[words][word_len - index++];
+        words++;
     }
+    return (e);
 }
 
-
-size_t word_play(char* e)
+int diff(char* e)
 {
+    return ((*e > 32 && *(e - 1) == 32) || (*e == 32 && *(e - 1) != 32));
+}
+
+void word_play(char* e)
+{
+    if(e[0] == '\0')
+        return ;
+
     int word_count;
     int word_len;
-    int index;
-    int mem;
-    int iter;
-    char* word = NULL;
+    size_t mem_size;
     char** list_of_words = NULL;
 
+    mem_size = 0;
     word_count = 0;
-    mem = 0;
     while(*e)
     {
-        ifspace(e, &word_count, list_of_words, &word_len);
-            while_space(&e, word_len);
-                list_of_words[word_count] = word(word_len, e);
-        ifnot_space(e, &word_count, list_of_words, &word_len);
-            while_not_space(&e, word_len);
-                list_of_words[word_count] = word(word_len, e);
-        e++;
+        word_len = 0;
+        while(*e)
+        {
+            word_len++;
+            e++;
+            if (diff(e))
+                break ;
+        }
+        mem_size += sizeof(char*) * word_len + 1;
+        list_of_words = realloc(list_of_words,  mem_size);
+        list_of_words[word_count] = word(word_len, e);
+        word_count++;
     }
-    return (reverse(list_of_words, word_count));
+    reverse(list_of_words, word_count, e);
 }
 
 #include <stdio.h>
 int main(void)
 {
-    char* e = "A simple text to reverse";
-    reverse(e);
+    char e[] = "A simple text to reverse";
+    word_play(e);
     puts(e);
     return (0);
 }
