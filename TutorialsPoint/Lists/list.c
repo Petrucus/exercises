@@ -12,8 +12,8 @@
 // Combine Two Linked List
 
 // Split Linked List into two
-
-#define <stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 struct link {
     int data;
@@ -21,27 +21,44 @@ struct link {
     struct link* previous;
 };
 
-typdef struct link link;
+typedef struct link link;
 
 link* create_link(int data, link* next, link* previous)
 {
     link* new_link = calloc(1, sizeof(link));
-    new_link->data = data;
-    new_link->next = next;
-    new_link->previous = previous;
-    return (link);
+    if(new_link)
+    {
+        new_link->data = data;
+        new_link->next = next;
+        new_link->previous = previous;
+    }
+    return (new_link);
 }
 
-link* chain_creator(int n)
-{
-    if (n == 0)
-        return  ;
-    create_link(n, create_link(n+1), create_link(n-1));
-    
+link* chain_creator(int n, link* previous)
+{   
+    if (n < 1)
+        return (NULL);
+    link* next = chain_creator(n-1, NULL);
+    link* new_link = create_link(n, next, previous);
+
+    if (next)
+        next->previous = new_link;
+    return (new_link);
 }
 
 int main()
 {
-    
+    link* mylink = chain_creator(4, NULL);
+    while(mylink->next != NULL)
+    {
+        printf("%d\n", mylink->data);
+        printf("%p\n", (void*)mylink->previous);
+        mylink = mylink->next;
+        free(mylink->previous);
+    }
+    printf("%d\n", mylink->data);
+    printf("%p\n", (void*)mylink->previous);
+    free(mylink);
     return (0);    
 }
